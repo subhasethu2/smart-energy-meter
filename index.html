@@ -1,0 +1,131 @@
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Smart Energy Meter - Real Time Dashboard</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f4f7f8;
+        color: #333;
+        text-align: center;
+        padding: 20px;
+      }
+  
+      h1 {
+        font-size: 32px;
+        color: #2c3e50;
+      }
+  
+      table {
+        border-collapse: collapse;
+        width: 95%;
+        margin: 20px auto;
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      }
+  
+      th, td {
+        padding: 10px;
+        border: 1px solid #ccc;
+      }
+  
+      th {
+        background-color: #34495e;
+        color: white;
+      }
+  
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+  
+      .available {
+        color: green;
+        font-weight: bold;
+      }
+  
+      .not-available {
+        color: red;
+        font-weight: bold;
+      }
+    </style>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+          apiKey: "AIzaSyDy73MxqanxpbPypkgak3R_00SEttXJBX0",
+          authDomain: "smart-energy-meter-97f07.firebaseapp.com",
+          projectId: "smart-energy-meter-97f07",
+          storageBucket: "smart-energy-meter-97f07.firebasestorage.app",
+          messagingSenderId: "1001979360495",
+          appId: "1:1001979360495:web:8368ae775e3c263de7571a",
+          measurementId: "G-DMSLY0FD37"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+      </script>
+  </head>
+  <body>
+    <h1>Smart Energy Meter - Real Time Dashboard</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Voltage (V)</th>
+          <th>Current (A)</th>
+          <th>Power (W)</th>
+          <th>Energy (kWh)</th>
+          <th>Power Factor</th>
+          <th>Frequency (Hz)</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="data-table"> 
+        <!-- Data will appear here -->
+      </tbody>
+    </table>
+  
+    <script>
+      const sheetURL = "https://script.google.com/macros/s/AKfycbzRQt1h92GhGAFKAqRGLnUGYv1zmgB3DC5N2FScJ3a-BxlV7XZx36KyZoyriL11AgvK/exec";
+  
+      async function fetchSheetData() {
+        try {
+          const res = await fetch(sheetURL);
+          const data = await res.json();
+  
+          const table = document.getElementById("data-table");
+          table.innerHTML = "";
+  
+          data.slice().reverse().forEach(row => {
+            const statusClass = row.Status === "Available" ? "available" : "not-available";
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${row.Time || "--"}</td>
+              <td>${row.Voltage || "--"}</td>
+              <td>${row.Current || "--"}</td>
+              <td>${row.Power || "--"}</td>
+              <td>${row.Energy || "--"}</td>
+              <td>${row.PowerFactor || "--"}</td>
+              <td>${row.Frequency || "--"}</td>
+              <td class="${statusClass}">${row.Status || "--"}</td>
+            `;
+            table.appendChild(tr);
+          });
+        } catch (err) {
+          console.error("Failed to load data:", err);
+        }
+      }
+  
+      fetchSheetData();
+      setInterval(fetchSheetData, 3000); // auto refresh every 3 seconds
+    </script>
+  </body>
+  </html>
